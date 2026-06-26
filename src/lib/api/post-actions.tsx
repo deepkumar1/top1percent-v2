@@ -57,7 +57,7 @@ export function createSubmittedArticle(
     coverGradient: input.coverGradient,
     likes: 0,
     bookmarks: 0,
-    comments: 0,
+    comments: [],
     status: "pending",
     submittedBy: user.id,
     authorMessage: input.authorMessage?.trim() || undefined,

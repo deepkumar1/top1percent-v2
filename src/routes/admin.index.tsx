@@ -224,7 +224,6 @@ function AdminDashboard() {
                 isOwnSubmission={a.submittedBy === currentUser?.id}
                 onEdit={() => handleEdit(a)}
                 onPreview={() => setPreviewArticle(a)}
-                onEdit={() => handleEdit(a)}
                 onDelete={() => deleteArticle(a.slug)}
               />
             ))
