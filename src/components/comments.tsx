@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import { useApp } from "@/lib/app-context";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,6 +43,7 @@ export function CommentForm({
     const author = getAuthor(currentUser.id);
     if (author) {
       addComment(articleSlug, currentUser.id, author.name, content);
+      toast.success("Comment posted.");
     }
     setContent("");
     onCommentAdded();

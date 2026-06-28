@@ -45,9 +45,12 @@ export const DEMO_USERS: User[] = [
 
 export function authenticateUser(email: string, password: string): User | null {
   const user = DEMO_USERS.find(
-    (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password,
+    (u) =>
+      u.email.toLowerCase() === email.toLowerCase() &&
+      u.password === password
   );
-  return user ?? null;
+
+  return user || null;
 }
 
 export type SessionUser = Omit<User, "password">;

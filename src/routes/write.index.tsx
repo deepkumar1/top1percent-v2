@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useApp } from "@/lib/app-context";
 import { RequireAuth } from "@/components/require-auth";
 import {
@@ -40,7 +41,7 @@ function WriteDashboard() {
   const [errors, setErrors] = useState<Partial<PostFormData>>({});
 
   const authorUsername =
-    currentUser?.authorUsername ?? formData.authorUsername ?? authors[0]?.username ?? "";
+    currentUser?.authorUsername ?? formData.authorUsername ?? authors[0]?.username ?? "admin";
   const myPosts = getMyPosts();
   const isAdmin = currentUser?.role === "admin";
   const showAuthorPicker = isAdmin && !currentUser?.authorUsername;
@@ -90,14 +91,16 @@ function WriteDashboard() {
 
     if (editingSlug) {
       updateOwnPost(editingSlug, payload);
+      toast.success("Post submitted for re-approval.");
     } else {
       submitArticle(payload);
+      toast.success("Post submitted for review.");
     }
     resetForm();
   };
 
   const editingArticle = editingSlug ? myPosts.find((a) => a.slug === editingSlug) : undefined;
-  const editingWasLive = (editingArticle?.status ?? "approved") === "approved";
+  const editingWasLive = !!editingSlug && (editingArticle?.status ?? "approved") === "approved";
 
   if (!authorUsername && !isAdmin) {
     return (

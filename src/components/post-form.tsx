@@ -270,7 +270,15 @@ export function PostForm({
             required
             tooltip="Write your article in Markdown. Use the toolbar above for headings, lists, code blocks (```), bold (**), links, and more."
           />
-          <MarkdownToolbar onInsert={handleMarkdownInsert} />
+          <MarkdownToolbar
+            onInsert={handleMarkdownInsert}
+            rightSlot={
+              <Button type="button" variant="outline" size="sm" onClick={() => setPreviewOpen(true)}>
+                <Eye className="mr-1 h-3.5 w-3.5" />
+                Preview
+              </Button>
+            }
+          />
           <Textarea
             ref={contentRef}
             id="content"
@@ -302,11 +310,7 @@ export function PostForm({
           </div>
         )}
 
-        <div className="flex flex-wrap gap-3">
-          <Button type="button" variant="outline" onClick={() => setPreviewOpen(true)}>
-            <Eye className="mr-2 h-4 w-4" />
-            Preview
-          </Button>
+        <div className="flex flex-wrap items-center justify-end gap-3">
           {onCancel && (
             <Button type="button" variant="secondary" onClick={onCancel}>
               Cancel

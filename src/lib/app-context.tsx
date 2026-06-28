@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, type ReactNode } from "react";
 import { ARTICLES, AUTHORS, CATEGORIES, type Article, type Author, type Category } from "./mock-data";
 import { authenticateUser, toSessionUser, type SessionUser } from "./auth";
 import { normalizeArticles } from "./articles";
@@ -95,14 +95,21 @@ export function AppProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(
         STORAGE_KEY,
         JSON.stringify({
-          ...state,
           likedArticles: Array.from(state.likedArticles),
           bookmarkedArticles: Array.from(state.bookmarkedArticles),
           followedAuthors: Array.from(state.followedAuthors),
+          newsletterSubscribed: state.newsletterSubscribed,
+          currentUser: state.currentUser,
         }),
       );
     }
-  }, [state]);
+  }, [
+    state.likedArticles,
+    state.bookmarkedArticles,
+    state.followedAuthors,
+    state.newsletterSubscribed,
+    state.currentUser,
+  ]);
 
   const requireUser = useCallback((): SessionUser => {
     if (!state.currentUser) throw new Error("Authentication required.");
@@ -267,28 +274,32 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [state.currentUser, state.articles],
   );
 
+  const contextValue = useMemo(
+    () => ({
+      ...state,
+      toggleLike,
+      toggleBookmark,
+      toggleFollow,
+      subscribeNewsletter,
+      login,
+      logout,
+      submitArticle,
+      updateOwnPost,
+      deleteOwnPost,
+      approveArticle,
+      sendForRework,
+      updateArticle,
+      deleteArticle,
+      getMyPosts,
+      getReviewQueue,
+      canApprovePost,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [state],
+  );
+
   return (
-    <AppContext.Provider
-      value={{
-        ...state,
-        toggleLike,
-        toggleBookmark,
-        toggleFollow,
-        subscribeNewsletter,
-        login,
-        logout,
-        submitArticle,
-        updateOwnPost,
-        deleteOwnPost,
-        approveArticle,
-        sendForRework,
-        updateArticle,
-        deleteArticle,
-        getMyPosts,
-        getReviewQueue,
-        canApprovePost,
-      }}
-    >
+    <AppContext.Provider value={contextValue}>
       {children}
     </AppContext.Provider>
   );

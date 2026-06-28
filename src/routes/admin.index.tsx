@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useApp } from "@/lib/app-context";
 import { RequireAuth } from "@/components/require-auth";
 import {
@@ -112,12 +113,14 @@ function AdminDashboard() {
     e.preventDefault();
     if (!editingSlug) return;
     updateArticle(editingSlug, formDataToPayload(formData));
+    toast.success("Post updated.");
     resetForm();
   };
 
   const handleApprove = () => {
     if (!approveSlug) return;
     approveArticle(approveSlug, adminMessage);
+    toast.success("Post approved and published.");
     setApproveSlug(null);
     setAdminMessage("");
   };
@@ -129,6 +132,7 @@ function AdminDashboard() {
       return;
     }
     sendForRework(reworkSlug, adminMessage);
+    toast.success("Feedback sent — post returned for rework.");
     setReworkSlug(null);
     setAdminMessage("");
   };
@@ -261,6 +265,7 @@ function AdminDashboard() {
                   <button 
                     onClick={() => {
                       approveArticle(previewArticle.slug, adminMessage);
+                      toast.success("Post approved and published.");
                       setPreviewArticle(null);
                       setAdminMessage("");
                     }}
@@ -278,6 +283,7 @@ function AdminDashboard() {
                         return;
                       }
                       sendForRework(previewArticle.slug, adminMessage);
+                      toast.success("Feedback sent — post returned for rework.");
                       setPreviewArticle(null);
                       setAdminMessage("");
                     }}
@@ -374,7 +380,7 @@ function AdminPostRow({
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={onDelete}>Delete</AlertDialogAction>
+                <AlertDialogAction onClick={() => { onDelete(); toast.success("Post deleted."); }}>Delete</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
