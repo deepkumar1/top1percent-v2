@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SearchRouteImport } from './routes/search'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as CategoriesRouteImport } from './routes/categories'
 import { Route as ArticlesRouteImport } from './routes/articles'
@@ -25,6 +26,11 @@ import { Route as ArticlesSlugRouteImport } from './routes/articles.$slug'
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
   path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -88,6 +94,7 @@ export interface FileRoutesByFullPath {
   '/articles': typeof ArticlesRouteWithChildren
   '/categories': typeof CategoriesRouteWithChildren
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/search': typeof SearchRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/authors/$username': typeof AuthorsUsernameRoute
@@ -100,6 +107,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/search': typeof SearchRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/authors/$username': typeof AuthorsUsernameRoute
@@ -115,6 +123,7 @@ export interface FileRoutesById {
   '/articles': typeof ArticlesRouteWithChildren
   '/categories': typeof CategoriesRouteWithChildren
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/search': typeof SearchRoute
   '/articles/$slug': typeof ArticlesSlugRoute
   '/authors/$username': typeof AuthorsUsernameRoute
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
     | '/articles'
     | '/categories'
     | '/login'
+    | '/register'
     | '/search'
     | '/articles/$slug'
     | '/authors/$username'
@@ -143,6 +153,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/register'
     | '/search'
     | '/articles/$slug'
     | '/authors/$username'
@@ -157,6 +168,7 @@ export interface FileRouteTypes {
     | '/articles'
     | '/categories'
     | '/login'
+    | '/register'
     | '/search'
     | '/articles/$slug'
     | '/authors/$username'
@@ -172,6 +184,7 @@ export interface RootRouteChildren {
   ArticlesRoute: typeof ArticlesRouteWithChildren
   CategoriesRoute: typeof CategoriesRouteWithChildren
   LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
   SearchRoute: typeof SearchRoute
   AuthorsUsernameRoute: typeof AuthorsUsernameRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -185,6 +198,13 @@ declare module '@tanstack/react-router' {
       path: '/search'
       fullPath: '/search'
       preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -300,6 +320,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArticlesRoute: ArticlesRouteWithChildren,
   CategoriesRoute: CategoriesRouteWithChildren,
   LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
   SearchRoute: SearchRoute,
   AuthorsUsernameRoute: AuthorsUsernameRoute,
   AdminIndexRoute: AdminIndexRoute,

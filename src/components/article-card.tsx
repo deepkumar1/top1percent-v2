@@ -149,7 +149,7 @@ export function ArticleCard({ article, variant = "default" }: { article: Article
               <Heart className="h-3.5 w-3.5" fill={likedArticles.has(currentArticle.slug) ? "currentColor" : "none"} />
               {formatNumber(currentArticle.likes)}
             </button>
-            <span className="inline-flex items-center gap-1"><MessageCircle className="h-3.5 w-3.5" />{formatNumber(currentArticle.comments.length)}</span>
+            <span className="inline-flex items-center gap-1"><MessageCircle className="h-3.5 w-3.5" />{formatNumber(currentArticle?.comments?.length || 0)}</span>
             <button
               type="button"
               onClick={(e) => {

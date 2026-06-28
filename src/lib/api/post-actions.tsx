@@ -45,6 +45,7 @@ export function createSubmittedArticle(
   user: SessionUser,
 ): Article {
   return {
+    id: crypto.randomUUID(),
     slug: input.slug,
     title: input.title,
     excerpt: input.excerpt,

@@ -31,18 +31,16 @@ export const LoginNew = ({ redirect = "/" }: { redirect?: string }) => {
     }
   }, [currentUser, navigate, redirect]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     setError("");
 
-    const ok = login(email, password);
+    const ok = await login(email, password);
 
     if (!ok) {
       setError("Invalid email or password.");
       toast.error("Invalid email or password.");
-    } else {
-      toast.success(`Welcome back!`);
     }
   };
 
@@ -123,6 +121,13 @@ export const LoginNew = ({ redirect = "/" }: { redirect?: string }) => {
         </div>
 
         <p className="mt-6 text-center text-sm text-muted-foreground">
+          Don't have an account?{" "}
+          <Link to="/register" className="font-medium text-primary hover:underline">
+            Create one
+          </Link>
+        </p>
+
+        <p className="mt-4 text-center text-sm text-muted-foreground">
           <Link to="/" className="text-primary hover:underline">
             Back to home
           </Link>
