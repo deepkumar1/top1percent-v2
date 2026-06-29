@@ -1,26 +1,29 @@
 import { Link } from "@tanstack/react-router";
 import { Bookmark, Heart, MessageCircle } from "lucide-react";
-import { CATEGORIES, formatDate, formatNumber, getCategory, type Article } from "@/lib/mock-data";
+import { formatDate, formatNumber, getAvatarGradient, getInitials } from "@/lib/utils";
+import type { Article } from "@/lib/mock-data";
 import { useApp } from "@/lib/app-context";
 
 export function AuthorAvatar({ username, size = 32, linkToProfile = true }: { username: string; size?: number; linkToProfile?: boolean }) {
   const { authors } = useApp();
   const author = authors.find(a => a.username === username);
-  if (!author) return null;
+  if (!author?.username) return null;
+  const gradient = author.avatarGradient || getAvatarGradient(author.username);
+  const initials = getInitials(author.username);
   const AvatarContent = (
     <div
-      className={`inline-flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${author.avatarGradient} font-sans text-xs font-semibold text-white ring-1 ring-black/5`}
+      className={`inline-flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${gradient} font-sans text-xs font-semibold text-white ring-1 ring-black/5`}
       style={{ width: size, height: size, fontSize: size * 0.36 }}
-      aria-label={author.name}
+      aria-label={author.username}
     >
-      {author.initials}
+      {initials}
     </div>
   );
   if (!linkToProfile) return AvatarContent;
   return (
     <Link
       to="/authors/$username"
-      params={{ username }}
+      params={{ username: author.username || "" }}
     >
       {AvatarContent}
     </Link>
@@ -28,7 +31,8 @@ export function AuthorAvatar({ username, size = 32, linkToProfile = true }: { us
 }
 
 export function CategoryPill({ slug }: { slug: string }) {
-  const c = getCategory(slug);
+  const { categories } = useApp();
+  const c = categories.find((cat) => cat.slug === slug);
   if (!c) return null;
   return (
     <Link
@@ -42,7 +46,7 @@ export function CategoryPill({ slug }: { slug: string }) {
 }
 
 export function ArticleCard({ article, variant = "default" }: { article: Article; variant?: "default" | "compact" | "feature" }) {
-  const { authors, toggleLike, toggleBookmark, likedArticles, bookmarkedArticles, articles } = useApp();
+  const { authors, categories, toggleLike, toggleBookmark, likedArticles, bookmarkedArticles, articles } = useApp();
   const author = authors.find(a => a.username === article.authorUsername);
   const currentArticle = articles.find(a => a.slug === article.slug) || article;
 
@@ -57,7 +61,7 @@ export function ArticleCard({ article, variant = "default" }: { article: Article
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.25),transparent_60%)]" />
           <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-white/90">
             <span className="rounded-full bg-black/30 px-2.5 py-1 text-[11px] font-medium backdrop-blur">
-              {getCategory(currentArticle.category)?.name}
+              {categories.find((c) => c.slug === currentArticle.category)?.name}
             </span>
             <span className="text-[11px]">{currentArticle.readingMinutes} min read</span>
           </div>
@@ -74,9 +78,9 @@ export function ArticleCard({ article, variant = "default" }: { article: Article
             <AuthorAvatar username={currentArticle.authorUsername} size={36} linkToProfile={false} />
             <div className="min-w-0">
               <Link to="/authors/$username" params={{ username: currentArticle.authorUsername }} className="text-sm font-medium hover:text-primary">
-                {author?.name}
+                {currentArticle?.authorUsername}    
               </Link>
-              <p className="text-xs text-muted-foreground">{formatDate(currentArticle.publishedAt)} · {formatNumber(currentArticle.likes)} likes</p>
+              <p className="text-xs text-muted-foreground">{formatDate(currentArticle.createdAt ?? "")} · {formatNumber(currentArticle.likes)} likes</p>
             </div>
           </div>
         </div>
@@ -96,9 +100,9 @@ export function ArticleCard({ article, variant = "default" }: { article: Article
         <div className="min-w-0">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <AuthorAvatar username={currentArticle.authorUsername} size={20} linkToProfile={false} />
-              <span className="truncate">{author?.name}</span>
+              <span className="truncate">{ currentArticle?.authorUsername}</span>
             </div>
-          <Link to="/articles/$slug" params={{ slug: currentArticle.slug }}>
+          <Link to="/articles/$slug" params={{ slug: currentArticle.slug }}>  
             <h3 className="mt-1.5 font-serif text-base font-semibold leading-snug tracking-tight line-clamp-2 group-hover:text-primary">
               {currentArticle.title}
             </h3>
@@ -131,10 +135,10 @@ export function ArticleCard({ article, variant = "default" }: { article: Article
         <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted-foreground">{currentArticle.excerpt}</p>
         <div className="mt-auto flex items-center justify-between pt-5">
           <div className="flex items-center gap-2">
-            <AuthorAvatar username={currentArticle.authorUsername} size={28} linkToProfile={false} />
+            <AuthorAvatar username={currentArticle?.authorUsername} size={28} linkToProfile={false} />
             <div className="min-w-0">
-              <p className="truncate text-xs font-medium">{author?.name}</p>
-              <p className="text-[11px] text-muted-foreground">{formatDate(currentArticle.publishedAt)}</p>
+              <p className="truncate text-xs font-medium">{currentArticle?.authorUsername}</p>
+              <p className="text-[11px] text-muted-foreground">{formatDate(currentArticle.createdAt || "")}</p>
             </div>
           </div>
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
@@ -168,4 +172,3 @@ export function ArticleCard({ article, variant = "default" }: { article: Article
   );
 }
 
-export { CATEGORIES };

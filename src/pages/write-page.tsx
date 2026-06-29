@@ -23,7 +23,7 @@ export default function WritePage() {
 function WriteDashboard() {
   const {
     currentUser,
-    CATEGORIES,
+    categories: CATEGORIES,
     authors,
     submitArticle,
     updateOwnPost,

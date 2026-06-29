@@ -5,6 +5,7 @@ export type RegisterRequest = {
   email: string;
   password: string;
   confirmPassword: string;
+  role?: string;
 };
 
 export type ApiResponse<T> = {

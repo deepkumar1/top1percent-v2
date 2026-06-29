@@ -1,6 +1,6 @@
 import { toast } from "sonner";
 import type { Article } from "@/lib/mock-data";
-import { formatDate } from "@/lib/mock-data";
+import { formatDate } from "@/lib/utils";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import {

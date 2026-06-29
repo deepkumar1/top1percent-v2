@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Bookmark, Heart, MessageCircle, Share2, Twitter, Linkedin, Link as LinkIcon } from "lucide-react";
-import { formatDate, formatNumber, getAuthor, getCategory } from "@/lib/mock-data";
+import { formatDate, formatNumber } from "@/lib/utils";
 import { ArticleCard, AuthorAvatar, CategoryPill } from "@/components/article-card";
 import { useApp } from "@/lib/app-context";
 import { isPublished, getPublishedArticles } from "@/lib/articles";
@@ -16,7 +16,7 @@ export default function ArticleDetail({ slug }: { slug: string }) {
   const { 
     articles, 
     authors, 
-    CATEGORIES,
+    categories,
     toggleLike, 
     toggleBookmark, 
     toggleFollow, 
@@ -96,9 +96,11 @@ export default function ArticleDetail({ slug }: { slug: string }) {
       </div>
     );
   }
+  const author = authors.find((a) => a.username === currentArticle.authorUsername);
+  const authorUsername = author?.username ?? currentArticle.authorUsername;
+  const authorName = author?.name ?? authorUsername;
 
-  const author = authors.find((a) => a.username === currentArticle.authorUsername) || getAuthor(currentArticle.authorUsername)!;
-  const category = CATEGORIES.find((c) => c.slug === currentArticle.category) || getCategory(currentArticle.category);
+  const category = categories.find((c) => c.slug === currentArticle.category);
   const related = getPublishedArticles(articles)
     .filter((a) => a.category === currentArticle.category && a.slug !== currentArticle.slug)
     .slice(0, 3);
@@ -108,7 +110,7 @@ export default function ArticleDetail({ slug }: { slug: string }) {
 
   const isLiked = likedArticles.has(currentArticle.slug);
   const isBookmarked = bookmarkedArticles.has(currentArticle?.slug);
-  const isFollowing = followedAuthors.has(author?.username);
+  const isFollowing = followedAuthors.has(authorUsername);
   const hasMoreComments = page + 1 < totalPages;
 
   return (
@@ -131,15 +133,15 @@ export default function ArticleDetail({ slug }: { slug: string }) {
           <p className="mt-4 text-lg leading-relaxed text-muted-foreground">{currentArticle.excerpt}</p>
 
           <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
-            <Link to="/authors/$username" params={{ username: author?.username }} className="flex items-center gap-3">
-              <AuthorAvatar username={author?.username} size={44} linkToProfile={false} />
+            <Link to="/authors/$username" params={{ username: authorUsername }} className="flex items-center gap-3">
+              <AuthorAvatar username={authorUsername} size={44} linkToProfile={false} />
               <div>
-                <p className="font-medium">{author?.name}</p>
+                <p className="font-medium">{authorName}</p>
                 <p className="text-xs text-muted-foreground">{formatNumber(author?.followers ?? 0)} followers · {author?.articlesCount ?? 0} articles</p>
               </div>
             </Link>
             <button 
-              onClick={() => toggleFollow(author?.username)}
+              onClick={() => toggleFollow(authorUsername)}
               className={`inline-flex h-9 items-center rounded-full px-4 text-xs font-medium transition-colors ${
                 isFollowing 
                   ? "bg-muted text-foreground hover:bg-muted/80" 
@@ -196,11 +198,11 @@ export default function ArticleDetail({ slug }: { slug: string }) {
         {/* Author card */}
         <div className="mt-12 rounded-2xl border border-border bg-surface p-6 md:p-8">
           <div className="flex items-start gap-5">
-            <AuthorAvatar username={author?.username} size={64} linkToProfile={false} />
+            <AuthorAvatar username={authorUsername} size={64} linkToProfile={false} />
             <div className="min-w-0 flex-1">
               <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Written by</p>
-              <Link to="/authors/$username" params={{ username: author?.username }} className="mt-1 block font-serif text-2xl font-semibold tracking-tight hover:text-primary">
-                {author?.name}
+              <Link to="/authors/$username" params={{ username: authorUsername }} className="mt-1 block font-serif text-2xl font-semibold tracking-tight hover:text-primary">
+                {authorName}
               </Link>
               <p className="mt-2 text-sm text-muted-foreground">{author?.bio ?? ""}</p>
               {moreFromAuthor.length > 0 && (

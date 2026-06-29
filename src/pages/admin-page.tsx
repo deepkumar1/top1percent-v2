@@ -25,7 +25,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { formatDate, getAuthor } from "@/lib/mock-data";
+import { formatDate } from "@/lib/utils";
 import type { Article } from "@/lib/mock-data";
 import type { ArticleStatus } from "@/lib/articles";
 
@@ -44,7 +44,7 @@ function AdminDashboard() {
     currentUser,
     articles,
     authors,
-    CATEGORIES,
+    categories: CATEGORIES,
     approveArticle,
     sendForRework,
     updateArticle,
@@ -330,7 +330,6 @@ function AdminPostRow({
   onPreview: () => void;
 }) {
   const status = (article.status ?? "approved") as ArticleStatus;
-  const author = getAuthor(article.authorUsername);
 
   return (
     <div className="rounded-xl border border-border p-4">
@@ -346,7 +345,7 @@ function AdminPostRow({
             )}
           </div>
           <p className="mt-1 text-xs text-muted-foreground">
-            {article.slug} · {author?.name ?? article.authorUsername} · {formatDate(article.publishedAt)}
+            {article.slug} · {article.authorUsername} · {formatDate(article.publishedAt)}
           </p>
           <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{article.excerpt}</p>
           {article.authorMessage && status === "pending" && (

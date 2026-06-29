@@ -4,7 +4,6 @@ import { Link } from "@tanstack/react-router";
 import { useApp } from "@/lib/app-context";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { getAuthor } from "@/lib/mock-data";
 import type { CommentData as Comment } from "@/lib/api/comments";
 import { commentsApi } from "@/lib/api/comments";
 
@@ -16,11 +15,12 @@ function formatDateTime(iso: string) {
 }
 
 function CommentAvatar({ username }: { username: string }) {
-  const author = getAuthor(username);
+  const { authors } = useApp();
+  const author = authors.find((a) => a.username === username);
   const displayName = author?.name || username;
   const initials = displayName
     .split(" ")
-    .map((n) => n[0])
+    .map((n: string) => n[0])
     .join("")
     .toUpperCase()
     .slice(0, 2);
@@ -28,7 +28,7 @@ function CommentAvatar({ username }: { username: string }) {
     "bg-blue-500", "bg-emerald-500", "bg-violet-500", "bg-amber-500",
     "bg-rose-500", "bg-cyan-500", "bg-pink-500", "bg-teal-500",
   ];
-  const colorIndex = displayName.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0) % colors.length;
+  const colorIndex = displayName.split("").reduce((acc: number, c: string) => acc + c.charCodeAt(0), 0) % colors.length;
   return (
     <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white ${colors[colorIndex]}`}>
       {initials}
@@ -47,12 +47,13 @@ export function CommentList({
   hasMore?: boolean;
   loading?: boolean;
 }) {
+  const { authors } = useApp();
   if (!comments) return null;
 
   return (
     <div className="space-y-5">
       {comments.filter((c) => c?.authorUsername).map((comment) => {
-        const author = getAuthor(comment.authorUsername);
+        const author = authors.find((a) => a.username === comment.authorUsername);
         const displayName = author?.name || comment.authorUsername;
         return (
           <div key={comment.id} className="flex gap-3">

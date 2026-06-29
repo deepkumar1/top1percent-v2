@@ -6,14 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useApp } from "@/lib/app-context";
-import { DEMO_USERS } from "@/lib/auth";
-
-const DEMO_ACCOUNTS = DEMO_USERS.map(({ email: e, password: p, role, name }) => ({
-  email: e,
-  password: p,
-  role,
-  name,
-}));
 
 export const LoginNew = ({ redirect = "/" }: { redirect?: string }) => {
   const navigate = useNavigate();
@@ -104,23 +96,7 @@ export const LoginNew = ({ redirect = "/" }: { redirect?: string }) => {
           </Button>
         </form>
 
-        <div className="mt-8 rounded-xl border border-dashed border-border bg-muted/30 p-4">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            Demo accounts
-          </p>
-          <ul className="mt-3 space-y-2 text-sm">
-            {DEMO_ACCOUNTS.map((a) => (
-              <li key={a.email} className="flex flex-col gap-0.5">
-                <span className="font-medium">{a.name}</span>
-                <span className="text-muted-foreground">
-                  {a.email} · {a.password} · {a.role}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <p className="mt-6 text-center text-sm text-muted-foreground">
+        <p className="mt-8 text-center text-sm text-muted-foreground">
           Don't have an account?{" "}
           <Link to="/register" className="font-medium text-primary hover:underline">
             Create one

@@ -1,12 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { getCategory } from "@/lib/mock-data";
 import { ArticleCard } from "@/components/article-card";
 import { useApp } from "@/lib/app-context";
 import { getPublishedArticles } from "@/lib/articles";
 
 export default function CategoryPage({ slug }: { slug: string }) {
-  const { articles, CATEGORIES } = useApp();
-  const category = CATEGORIES.find((c) => c.slug === slug);
+  const { articles, categories } = useApp();
+  const category = categories.find((c) => c.slug === slug);
 
   if (!category) {
     return (

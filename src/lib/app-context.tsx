@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo, type ReactNode } from "react";
-import { AUTHORS, CATEGORIES, type Article, type Author, type Category } from "./mock-data";
-import { authenticateUser, toSessionUser, type SessionUser } from "./auth";
+import type { Article, Author, Category } from "./mock-data";
+import { categoriesApi } from "./api/categories";
+import { authorsApi } from "./api/authors";
+import type { SessionUser } from "./auth";
 import { authApi } from "./api/auth";
 import { normalizeArticles } from "./articles";
 import {
@@ -13,9 +15,14 @@ import {
 import { canAdminApprovePost } from "./api/post-permissions";
 import type { SubmitPostInput, UpdatePostInput } from "./api/types";
 import { postsApi } from "./api/posts";
+import { seedIfEmpty, getSeedAuthors, getSeedCategories, getSeedArticles } from "./seed";
 
 const STORAGE_KEY = "wordspark-forge-data";
 let didFetchArticles = false;
+let didFetchCategories = false;
+let didFetchAuthors = false;
+
+seedIfEmpty();
 
 interface AppState {
   likedArticles: Set<string>;
@@ -24,7 +31,7 @@ interface AppState {
   newsletterSubscribed: boolean;
   articles: Article[];
   authors: Author[];
-  CATEGORIES: Category[];
+  categories: Category[];
   currentUser: SessionUser | null;
 }
 
@@ -64,9 +71,9 @@ function loadInitialState(): AppState {
           likedArticles: new Set(parsed.likedArticles || []),
           bookmarkedArticles: new Set(parsed.bookmarkedArticles || []),
           followedAuthors: new Set(parsed.followedAuthors || []),
-          articles: normalizeArticles(parsed.articles ?? []),
-          authors: parsed.authors?.length ? parsed.authors : AUTHORS,
-          CATEGORIES,
+          articles: normalizeArticles(parsed.articles?.length ? parsed.articles : getSeedArticles()),
+          authors: parsed.authors?.length ? parsed.authors : getSeedAuthors(),
+          categories: parsed.categories?.length ? parsed.categories : getSeedCategories(),
           currentUser: parsed.currentUser ?? null,
         };
       } catch (e) {
@@ -74,14 +81,17 @@ function loadInitialState(): AppState {
       }
     }
   }
+  const seedArticles = getSeedArticles();
+  const seedAuthors = getSeedAuthors();
+  const seedCategories = getSeedCategories();
   return {
     likedArticles: new Set(),
     bookmarkedArticles: new Set(),
     followedAuthors: new Set(),
     newsletterSubscribed: false,
-    articles: [],
-    authors: AUTHORS,
-    CATEGORIES,
+    articles: normalizeArticles(seedArticles),
+    authors: seedAuthors,
+    categories: seedCategories,
     currentUser: null,
   };
 }
@@ -115,7 +125,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
     didFetchArticles = true;
     postsApi.list().then((res) => {
       if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-        setState((prev) => ({ ...prev, articles: res.data as Article[] }));
+        setState((prev) => ({ ...prev, articles: res.data as unknown as Article[] }));
+      }
+    }).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (didFetchCategories) return;
+    didFetchCategories = true;
+    categoriesApi.list().then((res) => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        setState((prev) => ({ ...prev, categories: res.data }));
+      }
+    }).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (didFetchAuthors) return;
+    didFetchAuthors = true;
+    authorsApi.list().then((res) => {
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        setState((prev) => ({ ...prev, authors: res.data as unknown as Author[] }));
       }
     }).catch(() => {});
   }, []);
@@ -191,19 +221,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
             id: d.id,
             email: d.email,
             name: d.name || d.username || email,
-            role: (d.role as "admin" | "author") || "author",
+            role: (d.role?.toLowerCase() as "admin" | "author") || "author",
             authorUsername: d.authorUsername || d.username,
           },
         }));
         return true;
       }
     } catch {
-      // API unavailable — fall back to local demo users
+      // API unavailable
     }
-    const user = authenticateUser(email, password);
-    if (!user) return false;
-    setState((prev) => ({ ...prev, currentUser: toSessionUser(user) }));
-    return true;
+    return false;
   };
 
   const logout = () => {
@@ -212,28 +239,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const submitArticle = async (input: SubmitPostInput) => {
     const user = requireUser();
-    const res = await postsApi.create(input);
+    const res = await postsApi.create({ ...input, submittedBy: user.id });
     if (!res.success) {
       throw new Error(res.message || "Failed to create post");
     }
-    const article: Article = res.data;
+    const article = res.data as unknown as Article;
     setState((prev) => ({
       ...prev,
-      articles: [article, ...prev.articles],
+      articles: prev.articles.some((a) => a.slug === article.slug)
+        ? prev.articles.map((a) => (a.slug === article.slug ? article : a))
+        : [article, ...prev.articles],
     }));
   };
 
   const updateOwnPost = async (slug: string, input: UpdatePostInput) => {
     const user = requireUser();
-    const res = await postsApi.update(slug, input);
+    const res = await postsApi.update(slug, { ...input, submittedBy: user.id });
     if (!res.success) {
       throw new Error(res.message || "Failed to update post");
     }
-    const updated: Article = res.data as Article;
-    setState((prev) => ({
-      ...prev,
-      articles: prev.articles.map((a) => (a.slug === slug ? updated : a)),
-    }));
+    const updated = res.data as unknown as Article;
+    setState((prev) => {
+      const exists = prev.articles.some((a) => a.slug === slug);
+      return {
+        ...prev,
+        articles: exists
+          ? prev.articles.map((a) => (a.slug === slug ? updated : a))
+          : [...prev.articles, updated],
+      };
+    });
   };
 
   const deleteOwnPost = async (slug: string) => {
@@ -253,23 +287,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
     try {
       const res = await postsApi.approve(slug, adminMessage);
       if (res.success) {
-        setState((prev) => ({
-          ...prev,
-          articles: prev.articles.map((a) =>
-            a.slug === slug ? { ...a, ...res.data, status: "approved" as const } : a,
-          ),
-        }));
+        setState((prev) => {
+          const exists = prev.articles.some((a) => a.slug === slug);
+          return {
+            ...prev,
+            articles: exists
+              ? prev.articles.map((a) =>
+                  a.slug === slug ? { ...a, ...res.data, status: "approved" as const } : a,
+                )
+              : [...prev.articles, res.data as unknown as Article],
+          };
+        });
         return;
       }
     } catch {
       // API unavailable — fall back to local state
     }
-    setState((prev) => ({
-      ...prev,
-      articles: prev.articles.map((a) =>
-        a.slug === slug ? applyApprove(a, user, adminMessage) : a,
-      ),
-    }));
+    setState((prev) => {
+      const exists = prev.articles.some((a) => a.slug === slug);
+      return {
+        ...prev,
+        articles: exists
+          ? prev.articles.map((a) =>
+              a.slug === slug ? applyApprove(a, user, adminMessage) : a,
+            )
+          : prev.articles,
+      };
+    });
   };
 
   const sendForRework = async (slug: string, adminMessage: string) => {
@@ -277,23 +321,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
     try {
       const res = await postsApi.sendForRework(slug, adminMessage);
       if (res.success) {
-        setState((prev) => ({
-          ...prev,
-          articles: prev.articles.map((a) =>
-            a.slug === slug ? { ...a, ...res.data, status: "needs_rework" as const } : a,
-          ),
-        }));
+        setState((prev) => {
+          const exists = prev.articles.some((a) => a.slug === slug);
+          return {
+            ...prev,
+            articles: exists
+              ? prev.articles.map((a) =>
+                  a.slug === slug ? { ...a, ...res.data, status: "needs_rework" as const } : a,
+                )
+              : [...prev.articles, res.data as unknown as Article],
+          };
+        });
         return;
       }
     } catch {
       // API unavailable — fall back to local state
     }
-    setState((prev) => ({
-      ...prev,
-      articles: prev.articles.map((a) =>
-        a.slug === slug ? applyRework(a, user, adminMessage) : a,
-      ),
-    }));
+    setState((prev) => {
+      const exists = prev.articles.some((a) => a.slug === slug);
+      return {
+        ...prev,
+        articles: exists
+          ? prev.articles.map((a) =>
+              a.slug === slug ? applyRework(a, user, adminMessage) : a,
+            )
+          : prev.articles,
+      };
+    });
   };
 
   const updateArticle = async (slug: string, updates: Partial<Article>) => {
@@ -302,12 +356,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
     if (!res.success) {
       throw new Error(res.message || "Failed to update post");
     }
-    setState((prev) => ({
-      ...prev,
-      articles: prev.articles.map((a) =>
-        a.slug === slug ? { ...a, ...res.data } : a,
-      ),
-    }));
+    setState((prev) => {
+      const exists = prev.articles.some((a) => a.slug === slug);
+      return {
+        ...prev,
+        articles: exists
+          ? prev.articles.map((a) =>
+              a.slug === slug ? { ...a, ...res.data } : a,
+            )
+          : [...prev.articles, res.data as Article],
+      };
+    });
   };
 
   const deleteArticle = (slug: string) => {

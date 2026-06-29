@@ -14,6 +14,7 @@ export function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [role, setRole] = useState("AUTHOR");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
@@ -31,7 +32,7 @@ export function RegisterPage() {
     setLoading(true);
 
     try {
-      const res = await authApi.register({ username, email, password, confirmPassword });
+      const res = await authApi.register({ username, email, password, confirmPassword, role });
 
       if (!res.success) {
         setError(res.message || "Registration failed.");
@@ -130,6 +131,35 @@ export function RegisterPage() {
               >
                 {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
+            </div>
+          </div>
+
+          <div>
+            <Label>Role</Label>
+            <div className="mt-1 flex gap-6">
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="role"
+                  value="AUTHOR"
+                  checked={role === "AUTHOR"}
+                  onChange={() => setRole("AUTHOR")}
+                  disabled={role === "AUTHOR"}
+                  className="h-4 w-4 accent-primary"
+                />
+                <span className="text-sm text-muted-foreground">Author</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="role"
+                  value="ADMIN"
+                  checked={role === "ADMIN"}
+                  onChange={() => setRole("ADMIN")}
+                  className="h-4 w-4 accent-primary"
+                />
+                <span className="text-sm text-muted-foreground">Admin</span>
+              </label>
             </div>
           </div>
 

@@ -1,12 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Sparkles, TrendingUp, Mail } from "lucide-react";
-import { CATEGORIES } from "@/lib/mock-data";
 import { ArticleCard, AuthorAvatar } from "@/components/article-card";
 import { useApp } from "@/lib/app-context";
 import { getPublishedArticles } from "@/lib/articles";
 
 export default function Home() {
-  const { articles, authors, subscribeNewsletter, newsletterSubscribed } = useApp();
+  const { articles, authors, categories, subscribeNewsletter, newsletterSubscribed } = useApp();
   const published = getPublishedArticles(articles);
   const featured = published.filter((a) => a.featured);
   const trending = published.filter((a) => a.trending).slice(0, 5);
@@ -44,7 +43,7 @@ export default function Home() {
                 ))}
               </div>
               <p className="text-xs text-muted-foreground">
-                <span className="font-medium text-foreground">2,400+ engineers</span> publishing this month
+                <span className="font-medium text-foreground">Engineers</span> publishing this month
               </p>
             </div>
           </div>
@@ -139,7 +138,7 @@ export default function Home() {
         <div className="container-wide">
           <SectionHeader eyebrow="By topic" title="Browse categories" href="/categories" />
           <div className="mt-10 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {CATEGORIES.map((c) => (
+            {categories.map((c) => (
               <Link
                 key={c.slug}
                 to="/categories/$slug"

@@ -1,18 +1,17 @@
 import { Link } from "@tanstack/react-router";
-import { CATEGORIES } from "@/lib/mock-data";
 import { useApp } from "@/lib/app-context";
 
 export default function CategoriesIndex() {
-  const { articles } = useApp();
+  const { articles, categories } = useApp();
   return (
     <div className="container-wide py-10">
       <header className="max-w-2xl">
         <p className="text-xs font-semibold uppercase tracking-widest text-primary">Explore</p>
         <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight md:text-5xl">Categories</h1>
-        <p className="mt-3 text-muted-foreground">Pick a topic and dive in. {CATEGORIES.length} curated categories, growing each week.</p>
+        <p className="mt-3 text-muted-foreground">Pick a topic and dive in. {categories.length} curated categories, growing each week.</p>
       </header>
       <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {CATEGORIES.map((c) => {
+        {categories.map((c) => {
           const count = articles.filter((a) => a.category === c.slug).length;
           return (
             <Link

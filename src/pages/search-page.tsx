@@ -1,12 +1,11 @@
 import { Search as SearchIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { CATEGORIES } from "@/lib/mock-data";
 import { ArticleCard } from "@/components/article-card";
 import { useApp } from "@/lib/app-context";
 import { getPublishedArticles } from "@/lib/articles";
 
 export default function SearchPage() {
-  const { articles, authors } = useApp();
+  const { articles, authors, categories } = useApp();
   const [q, setQ] = useState("");
   const [category, setCategory] = useState<string>("");
   const [author, setAuthor] = useState<string>("");
@@ -52,7 +51,7 @@ export default function SearchPage() {
           aria-label="Filter by category"
         >
           <option value="">All categories</option>
-          {CATEGORIES.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
+          {categories.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
         </select>
         <select
           value={author}

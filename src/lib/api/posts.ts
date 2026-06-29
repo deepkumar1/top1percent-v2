@@ -19,6 +19,7 @@ export type PostPayload = {
   readingMinutes: number;
   coverGradient: string;
   authorMessage?: string;
+  submittedBy?: string;
 };
 
 export type ArticleData = {

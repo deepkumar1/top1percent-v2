@@ -1,4 +1,4 @@
-import { ARTICLES, type Article, type Comment } from "./mock-data";
+import type { Article } from "./mock-data";
 
 export type ArticleStatus = "approved" | "pending" | "needs_rework";
 
@@ -33,20 +33,3 @@ export function getPublishedArticles(articles: Article[]): Article[] {
   return articles.filter(isPublished);
 }
 
-export function addComment(articleSlug: string, authorId: string, authorName: string, content: string) {
-  const article = ARTICLES.find((a) => a.slug === articleSlug);
-  if (article) {
-    const newComment: Comment = {
-      id: crypto.randomUUID(),
-      author: { id: authorId, name: authorName },
-      content,
-      createdAt: new Date().toISOString(),
-    };
-    article.comments.unshift(newComment);
-  }
-}
-
-export function getComments(articleSlug: string): Comment[] {
-  const article = ARTICLES.find((a) => a.slug === articleSlug);
-  return article?.comments ?? [];
-}

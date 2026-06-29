@@ -23,6 +23,7 @@ export type PostFormPayload = {
   readingMinutes: number;
   coverGradient: string;
   authorMessage?: string;
+  submittedBy?: string;
 };
 
 export type SubmitPostInput = PostFormPayload;
