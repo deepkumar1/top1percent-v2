@@ -5,6 +5,7 @@ import {
   Heading2,
   Heading3,
   Image,
+  Italic,
   Link,
   List,
   ListOrdered,
@@ -47,6 +48,22 @@ export const MARKDOWN_TOOLS: {
     tooltip: "Bold text — wrap with **double asterisks**",
     icon: Bold,
     insert: { before: "**", after: "**", placeholder: "bold text" },
+  },
+  {
+    id: "italic",
+    label: "Italic",
+    tooltip: "Italic text — wrap with *single asterisks*",
+    icon: Italic,
+    insert: { before: "*", after: "*", placeholder: "italic text" },
+  },
+  {
+    id: "bold-italic",
+    label: "Bold + Italic",
+    tooltip: "Bold and italic text — wrap with ***triple asterisks***",
+    icon: ({ className }: { className?: string }) => (
+      <span className={`text-[10px] font-bold italic ${className ?? ""}`}>B+I</span>
+    ),
+    insert: { before: "***", after: "***", placeholder: "bold italic text" },
   },
   {
     id: "inline-code",
@@ -106,11 +123,12 @@ export const MARKDOWN_TOOLS: {
 
 type MarkdownToolbarProps = {
   onInsert: (insert: MarkdownInsert) => void;
+  rightSlot?: React.ReactNode;
 };
 
-export function MarkdownToolbar({ onInsert }: MarkdownToolbarProps) {
+export function MarkdownToolbar({ onInsert, rightSlot }: MarkdownToolbarProps) {
   return (
-    <div className="flex flex-wrap gap-1 rounded-t-lg border border-b-0 border-border bg-muted/40 p-2">
+    <div className="flex flex-wrap items-center gap-1 rounded-t-lg border border-b-0 border-border bg-muted/40 p-2">
       {MARKDOWN_TOOLS.map((tool) => (
         <Tooltip key={tool.id}>
           <TooltipTrigger asChild>
@@ -131,6 +149,7 @@ export function MarkdownToolbar({ onInsert }: MarkdownToolbarProps) {
           </TooltipContent>
         </Tooltip>
       ))}
+      {rightSlot && <div className="ml-auto">{rightSlot}</div>}
     </div>
   );
 }

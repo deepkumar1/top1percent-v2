@@ -1,5 +1,6 @@
+import { toast } from "sonner";
 import type { Article } from "@/lib/mock-data";
-import { formatDate } from "@/lib/mock-data";
+import { formatDate } from "@/lib/utils";
 import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -98,7 +99,7 @@ function MyPostRow({
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => onDelete(article.slug)}>Delete</AlertDialogAction>
+                <AlertDialogAction onClick={() => { onDelete(article.slug); toast.success("Post deleted."); }}>Delete</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>

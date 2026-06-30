@@ -1,17 +1,17 @@
-import { Link, useLocation } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Search, PenLine, Menu, LogOut, Shield } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { useApp } from "@/lib/app-context";
 import { Button } from "@/components/ui/button";
 
 export function SiteHeader() {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const { currentUser, logout } = useApp();
-  const location = useLocation();
-  const redirect = location.pathname;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-background/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-border/70 bg-background">
       <div className="container-wide flex h-16 items-center justify-between gap-4">
         <Link to="/" className="group flex items-center gap-2">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-secondary font-serif text-sm font-bold text-secondary-foreground">
@@ -36,6 +36,14 @@ export function SiteHeader() {
           >
             <Search className="h-4 w-4" />
           </Link>
+            <Link
+                to={currentUser ? "/write" : "/login"}
+                search={currentUser ? undefined : { redirect: "/write" }}
+                className="hidden h-9 items-center gap-2 rounded-full bg-secondary px-4 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/90 sm:inline-flex"
+              >
+                <PenLine className="h-4 w-4" />
+                Write
+              </Link>
 
           {currentUser ? (
             <>
@@ -52,7 +60,7 @@ export function SiteHeader() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={logout}
+                onClick={() => { logout(); navigate({ to: "/" }); toast.success("Signed out."); }}
                 className="hidden h-9 gap-1.5 sm:inline-flex"
               >
                 <LogOut className="h-4 w-4" />
@@ -86,7 +94,7 @@ export function SiteHeader() {
             {currentUser ? (
               <button
                 type="button"
-                onClick={() => { logout(); setOpen(false); }}
+                onClick={() => { logout(); setOpen(false); navigate({ to: "/" }); toast.success("Signed out."); }}
                 className="rounded-md px-3 py-2 text-left hover:bg-muted"
               >
                 Sign out ({currentUser.name})
