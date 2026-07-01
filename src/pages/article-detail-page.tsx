@@ -125,7 +125,7 @@ export default function ArticleDetail({ slug }: { slug: string }) {
         <div className="rounded-2xl border border-border bg-card p-6 shadow-elevated md:p-10">
           <div className="flex flex-wrap items-center gap-3">
             {category && <CategoryPill slug={currentArticle.category} />}
-            <span className="text-xs text-muted-foreground">{currentArticle.readingMinutes} min read · {formatDate(currentArticle.publishedAt)}</span>
+            <span className="text-xs text-muted-foreground">{currentArticle.readingMinutes} min read · {formatDate(currentArticle?.createdAt ?? "")}</span>
           </div>
           <h1 className="mt-4 font-serif text-4xl font-semibold leading-[1.1] tracking-tight text-balance md:text-5xl">
             {currentArticle.title}

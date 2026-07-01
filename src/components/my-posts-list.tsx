@@ -62,7 +62,7 @@ function MyPostRow({
             <StatusBadge status={status} />
           </div>
           <p className="mt-1 text-xs text-muted-foreground">
-            {article.slug} · {formatDate(article.publishedAt)}
+            {article.slug} · {formatDate(article?.createdAt ?? "")}
           </p>
           {status === "approved" && (
             <p className="mt-1 text-xs text-amber-600">
