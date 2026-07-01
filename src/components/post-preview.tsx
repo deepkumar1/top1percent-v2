@@ -24,7 +24,7 @@ export function PostPreview({ open, onOpenChange, formData, categoryName, childr
         </DialogHeader>
         <article>
           <div
-            className={`relative mb-8 h-40 overflow-hidden rounded-xl bg-gradient-to-br ${formData.coverGradient || "from-indigo-600 to-fuchsia-600"}`}
+            className={`relative mb-4 h-24 overflow-hidden rounded-xl bg-gradient-to-br ${formData.coverGradient || "from-indigo-600 to-fuchsia-600"}`}
           />
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
             {categoryName && (
@@ -32,7 +32,7 @@ export function PostPreview({ open, onOpenChange, formData, categoryName, childr
             )}
             <span>{formData.readingMinutes} min read</span>
           </div>
-          <h1 className="mt-4 font-serif text-3xl font-semibold tracking-tight">
+          <h1 className="mt-2 font-serif text-3xl font-semibold tracking-tight">
             {formData.title || "Untitled post"}
           </h1>
           {formData.excerpt && (
@@ -47,7 +47,7 @@ export function PostPreview({ open, onOpenChange, formData, categoryName, childr
               ))}
             </div>
           )}
-          <div className="prose-article mt-8 border-t border-border pt-8">
+          <div className="prose-article mt-4 border-t border-border pt-4">
             {formData.content ? renderMarkdown(formData.content) : (
               <p className="text-muted-foreground">No content yet.</p>
             )}
