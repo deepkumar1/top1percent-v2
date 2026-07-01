@@ -53,7 +53,7 @@ export function createSubmittedArticle(
     authorUsername: input.authorUsername,
     category: input.category,
     tags: input.tags,
-    publishedAt: todayDate(),
+    createdAt: todayDate(),
     readingMinutes: input.readingMinutes,
     coverGradient: input.coverGradient,
     likes: 0,
@@ -100,7 +100,7 @@ export function applyApprove(
     ...article,
     status: "approved",
     adminFeedback: undefined,
-    publishedAt: todayDate(),
+    createdAt: todayDate(),
     messages: appendMessage(article.messages ?? [], user, adminMessage),
   };
 }
