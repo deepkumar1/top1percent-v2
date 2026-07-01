@@ -116,16 +116,16 @@ export default function ArticleDetail({ slug }: { slug: string }) {
   return (
     <article>
       {/* Cover */}
-      <div className={`relative h-[42vh] min-h-[320px] w-full overflow-hidden bg-gradient-to-br ${currentArticle.coverGradient}`}>
+        <div className={`relative h-[28vh] min-h-[200px] w-full overflow-hidden bg-gradient-to-br ${currentArticle.coverGradient}`}>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.25),transparent_60%)]" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
       </div>
 
-      <div className="container-prose -mt-20 md:-mt-28 relative z-10">
+      <div className="container-prose -mt-12 md:-mt-16 relative z-10">
         <div className="rounded-2xl border border-border bg-card p-6 shadow-elevated md:p-10">
           <div className="flex flex-wrap items-center gap-3">
             {category && <CategoryPill slug={currentArticle.category} />}
-            <span className="text-xs text-muted-foreground">{currentArticle.readingMinutes} min read · {formatDate(currentArticle.publishedAt)}</span>
+            <span className="text-xs text-muted-foreground">{currentArticle.readingMinutes} min read · {formatDate(currentArticle?.createdAt ?? "")}</span>
           </div>
           <h1 className="mt-4 font-serif text-4xl font-semibold leading-[1.1] tracking-tight text-balance md:text-5xl">
             {currentArticle.title}
@@ -155,7 +155,7 @@ export default function ArticleDetail({ slug }: { slug: string }) {
       </div>
 
       {/* Body */}
-      <div className="container-prose mt-12">
+      <div className="container-prose mt-8">
         <div className="prose-article">{renderMarkdown(currentArticle.content)}</div>
 
         {/* Tags */}
@@ -166,7 +166,7 @@ export default function ArticleDetail({ slug }: { slug: string }) {
         </div>
 
         {/* Action bar */}
-        <div className="mt-10 flex items-center justify-between rounded-2xl border border-border bg-card px-5 py-4">
+        <div className="mt-8 flex items-center justify-between rounded-2xl border border-border bg-card px-5 py-4">
           <div className="flex items-center gap-5 text-sm">
             <button 
               onClick={() => toggleLike(currentArticle.slug)}
@@ -196,7 +196,7 @@ export default function ArticleDetail({ slug }: { slug: string }) {
         </div>
 
         {/* Author card */}
-        <div className="mt-12 rounded-2xl border border-border bg-surface p-6 md:p-8">
+        <div className="mt-8 rounded-2xl border border-border bg-surface p-6 md:p-8">
           <div className="flex items-start gap-5">
             <AuthorAvatar username={authorUsername} size={64} linkToProfile={false} />
             <div className="min-w-0 flex-1">
@@ -217,7 +217,7 @@ export default function ArticleDetail({ slug }: { slug: string }) {
         </div>
 
         {/* Comments */}
-        <section className="mt-12">
+        <section className="mt-8">
         <h2 className="font-serif text-2xl font-semibold tracking-tight">Comments · {comments?.length ?? 0}</h2>
         <div className="mt-8 space-y-8">
           <CommentForm articleId={currentArticle.id} articleSlug={currentArticle.slug} onCommentAdded={handleCommentAdded} />
@@ -233,7 +233,7 @@ export default function ArticleDetail({ slug }: { slug: string }) {
 
       {/* Related */}
       {related.length > 0 && (
-        <section className="mt-20 border-t border-border bg-surface py-16">
+        <section className="mt-12 border-t border-border bg-surface py-10">
           <div className="container-wide">
             <p className="text-xs font-semibold uppercase tracking-widest text-primary">More in {category?.name}</p>
             <h2 className="mt-2 font-serif text-3xl font-semibold tracking-tight">Related articles</h2>

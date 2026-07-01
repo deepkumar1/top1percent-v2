@@ -57,7 +57,6 @@ export type Article = {
   authorUsername: string;
   category: string;
   tags: string[];
-  publishedAt: string;
   createdAt?: string;
   readingMinutes: number;
   likes: number;

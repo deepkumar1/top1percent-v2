@@ -27,7 +27,7 @@ export function renderMarkdown(md: string): ReactNode {
           const match = /language-(\w+)/.exec(className || "");
           if (match) {
             return (
-              <pre className="overflow-x-auto rounded-lg bg-muted p-4 text-sm">
+              <pre className="overflow-x-auto rounded-lg bg-muted p-3 text-sm leading-relaxed">
                 <code className={className} {...props}>
                   {children}
                 </code>
@@ -42,7 +42,7 @@ export function renderMarkdown(md: string): ReactNode {
             );
           }
           return (
-            <pre className="overflow-x-auto rounded-lg bg-muted p-4 text-sm">
+            <pre className="overflow-x-auto rounded-lg bg-muted p-3 text-sm leading-relaxed">
               <code className={className} {...props}>{children}</code>
             </pre>
           );

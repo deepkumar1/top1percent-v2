@@ -173,16 +173,6 @@ function AdminDashboard() {
         Use <strong className="font-medium text-foreground">Write</strong> in the header to create posts — another admin must approve yours.
       </p>
 
-      <div className="mt-6 flex gap-3">
-        <Link
-          to="/register"
-          search={{ admin: true }}
-          className="inline-flex h-9 items-center gap-2 rounded-full bg-secondary px-4 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/90"
-        >
-          + Create new user
-        </Link>
-      </div>
-
       {editingSlug && (
         <div className="mt-10 rounded-2xl border border-border bg-card p-6">
           <h2 className="font-serif text-2xl font-semibold">Edit post (admin)</h2>
@@ -206,21 +196,30 @@ function AdminDashboard() {
         </div>
       )}
 
-      <div className="mt-10 flex flex-wrap gap-2">
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => setTab(t.id)}
-            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
-              tab === t.id
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
-            }`}
-          >
-            {t.label} ({t.count})
-          </button>
-        ))}
+      <div className="mt-10 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap gap-2">
+          {tabs.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => setTab(t.id)}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-all ${
+                tab === t.id
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+              }`}
+            >
+              {t.label} ({t.count})
+            </button>
+          ))}
+        </div>
+        <Link
+          to="/register"
+          search={{ admin: true }}
+          className="inline-flex h-7 shrink-0 items-center gap-1 rounded-full bg-secondary px-3 text-xs font-medium text-secondary-foreground transition-colors hover:bg-secondary/90"
+        >
+          + Create new user
+        </Link>
       </div>
 
       {tab === "my_posts" ? (
@@ -356,7 +355,7 @@ function AdminPostRow({
             )}
           </div>
           <p className="mt-1 text-xs text-muted-foreground">
-            {article.slug} · {article.authorUsername} · {formatDate(article.publishedAt)}
+            {article.slug} · {article.authorUsername} · {formatDate(article?.createdAt ?? "")}
           </p>
           <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{article.excerpt}</p>
           {article.authorMessage && status === "pending" && (

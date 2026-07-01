@@ -180,7 +180,7 @@
   & a { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
   & blockquote { border-left: 3px solid var(--color-primary); padding-left: 1.25rem; font-style: italic; color: var(--color-muted-foreground); margin-block: 1.5em; }
   & code { font-family: var(--font-mono); font-size: 0.875em; background: var(--color-muted); padding: 0.15em 0.4em; border-radius: 0.3rem; }
-  & pre { background: var(--color-secondary); color: var(--color-secondary-foreground); padding: 1.25rem; border-radius: 0.75rem; overflow-x: auto; font-family: var(--font-mono); font-size: 0.875rem; line-height: 1.6; margin-block: 1.5em; }
+  & pre { background: var(--color-secondary); color: var(--color-secondary-foreground); padding: 0.75rem; border-radius: 0.75rem; overflow-x: auto; font-family: var(--font-mono); font-size: 0.875rem; line-height: 1.5; margin-block: 0.75em; }
   & pre code { background: transparent; padding: 0; color: inherit; }
   & ul, & ol { padding-left: 1.5rem; margin-block: 1.25em; }
   & ul { list-style-type: disc; }
@@ -208,13 +208,13 @@
 .ProseMirror pre {
   background: var(--color-secondary);
   color: var(--color-secondary-foreground);
-  padding: 1rem;
+  padding: 0.75rem;
   border-radius: 0.5rem;
   overflow-x: auto;
   font-family: var(--font-mono);
   font-size: 0.875rem;
-  line-height: 1.6;
-  margin-block: 1em;
+  line-height: 1.5;
+  margin-block: 0.5em;
 }
 
 .ProseMirror pre code {
