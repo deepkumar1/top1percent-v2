@@ -14,4 +14,9 @@ export const categoriesApi = {
       .get<ApiResponse<Category[]>>("/categories")
       .then((r) => r.data);
   },
+  create(data: Omit<Category, "id">) {
+    return apiClient
+      .post<ApiResponse<Category>>("/categories/newcategory", data)
+      .then((r) => r.data);
+  },
 };

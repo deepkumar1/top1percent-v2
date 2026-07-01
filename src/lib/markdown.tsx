@@ -1,6 +1,7 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
+import rehypeRaw from "rehype-raw";
 import type { ReactNode } from "react";
 
 export function renderMarkdown(md: string): ReactNode {
@@ -8,7 +9,20 @@ export function renderMarkdown(md: string): ReactNode {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm, remarkBreaks]}
+      rehypePlugins={[rehypeRaw]}
       components={{
+        h1({ children, ...props }) {
+          return <h1 className="font-serif text-3xl font-semibold tracking-tight mt-8 mb-4" {...props}>{children}</h1>;
+        },
+        h2({ children, ...props }) {
+          return <h2 className="font-serif text-2xl font-semibold tracking-tight mt-6 mb-3" {...props}>{children}</h2>;
+        },
+        h3({ children, ...props }) {
+          return <h3 className="font-serif text-xl font-semibold tracking-tight mt-5 mb-2" {...props}>{children}</h3>;
+        },
+        h4({ children, ...props }) {
+          return <h4 className="font-serif text-lg font-semibold mt-4 mb-2" {...props}>{children}</h4>;
+        },
         code({ className, children, ...props }) {
           const match = /language-(\w+)/.exec(className || "");
           if (match) {
@@ -41,7 +55,8 @@ export function renderMarkdown(md: string): ReactNode {
           );
         },
         img({ src, alt }) {
-          return <img src={src} alt={alt} className="rounded-lg" loading="lazy" />;
+          if (!src) return null;
+          return <img src={src} alt={alt || ""} className="mx-auto rounded-lg" loading="lazy" />;
         },
       }}
     >

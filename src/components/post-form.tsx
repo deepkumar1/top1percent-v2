@@ -1,16 +1,15 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus } from "lucide-react";
 import { FormFieldTip } from "@/components/form-field-tip";
 import { PostPreview } from "@/components/post-preview";
-import {
-  MarkdownToolbar,
-  applyMarkdownInsert,
-  type MarkdownInsert,
-} from "@/components/markdown-toolbar";
+import { CreateCategoryDialog } from "@/components/create-category-dialog";
+import { TiptapEditor } from "@/components/tiptap-editor";
+import type { Category } from "@/lib/mock-data";
 
 export type PostFormData = {
   slug: string;
@@ -40,6 +39,8 @@ type PostFormProps = {
   showAuthorMessage?: boolean;
   editingWasLive?: boolean;
   errors?: Partial<PostFormData>;
+  onCategoryCreated?: (category: Category) => void;
+  editorKey?: string;
 };
 
 const COVER_GRADIENTS = [
@@ -66,30 +67,12 @@ export function PostForm({
   showAuthorMessage = true,
   editingWasLive = false,
   errors = {},
+  onCategoryCreated,
+  editorKey,
 }: PostFormProps) {
-  const contentRef = useRef<HTMLTextAreaElement>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
 
   const categoryName = categories.find((c) => c.slug === formData.category)?.name;
-
-  const handleMarkdownInsert = (insert: MarkdownInsert) => {
-    const el = contentRef.current;
-    if (!el) return;
-
-    const { value, cursorStart, cursorEnd } = applyMarkdownInsert(
-      formData.content,
-      el.selectionStart,
-      el.selectionEnd,
-      insert,
-    );
-
-    setFormData({ ...formData, content: value });
-
-    requestAnimationFrame(() => {
-      el.focus();
-      el.setSelectionRange(cursorStart, cursorEnd);
-    });
-  };
 
   return (
     <>
@@ -124,6 +107,7 @@ export function PostForm({
               placeholder="my-awesome-post"
               disabled={!!editingSlug}
             />
+            {errors.slug && <p className="mt-1 text-sm text-red-600">{errors.slug}</p>}
           </div>
           <div>
             <FormFieldTip
@@ -173,6 +157,7 @@ export function PostForm({
             placeholder="A short description of the post"
             rows={3}
           />
+          {errors.excerpt && <p className="mt-1 text-sm text-red-600">{errors.excerpt}</p>}
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -208,21 +193,27 @@ export function PostForm({
               required
               tooltip="The primary topic for your article. Helps readers discover it in browse and search."
             />
-            <Select
-              value={formData.category}
-              onValueChange={(v) => setFormData({ ...formData, category: v })}
-            >
-              <SelectTrigger id="category">
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((c) => (
-                  <SelectItem key={c.slug} value={c.slug}>
-                    {c.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-2">
+              <Select
+                value={formData.category}
+                onValueChange={(v) => setFormData({ ...formData, category: v })}
+              >
+                <SelectTrigger id="category" className="flex-1">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((c) => (
+                    <SelectItem key={c.slug} value={c.slug}>
+                      {c.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {onCategoryCreated && (
+                <CreateCategoryDialog onCategoryCreated={onCategoryCreated} />
+              )}
+            </div>
+            {errors.category && <p className="mt-1 text-sm text-red-600">{errors.category}</p>}
           </div>
         </div>
 
@@ -264,33 +255,24 @@ export function PostForm({
         </div>
 
         <div>
-          <FormFieldTip
-            htmlFor="content"
-            label="Content"
-            required
-            tooltip="Write your article in Markdown. Use the toolbar above for headings, lists, code blocks (```), bold (**), links, and more."
-          />
-          <MarkdownToolbar
-            onInsert={handleMarkdownInsert}
-            rightSlot={
-              <Button type="button" variant="outline" size="sm" onClick={() => setPreviewOpen(true)}>
-                <Eye className="mr-1 h-3.5 w-3.5" />
-                Preview
-              </Button>
-            }
-          />
-          <Textarea
-            ref={contentRef}
-            id="content"
+          <div className="mb-2 flex items-center justify-between">
+            <FormFieldTip
+              htmlFor="content"
+              label="Content"
+              required
+              tooltip="Write your article using the rich text editor. Use the toolbar above for headings, lists, code blocks, colors, links, and more."
+            />
+            <Button type="button" variant="outline" size="sm" onClick={() => setPreviewOpen(true)}>
+              <Eye className="mr-1 h-3.5 w-3.5" />
+              Preview
+            </Button>
+          </div>
+          <TiptapEditor
+            key={editorKey}
             value={formData.content}
-            onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-            placeholder="Write your post content here..."
-            className="min-h-[300px] rounded-t-none"
+            onChange={(content) => setFormData({ ...formData, content })}
           />
           {errors.content && <p className="mt-1 text-sm text-red-600">{errors.content}</p>}
-          <p className="mt-2 text-xs text-muted-foreground">
-            Markdown supported: ## headings, **bold**, `code`, ``` code blocks ```, - lists, 1. numbered lists, &gt; quotes, [links](url)
-          </p>
         </div>
 
         {showAuthorMessage && (
