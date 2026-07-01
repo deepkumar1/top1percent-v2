@@ -15,14 +15,11 @@ import {
 import { canAdminApprovePost } from "./api/post-permissions";
 import type { SubmitPostInput, UpdatePostInput } from "./api/types";
 import { postsApi } from "./api/posts";
-import { seedIfEmpty, getSeedAuthors, getSeedCategories, getSeedArticles } from "./seed";
 
 const STORAGE_KEY = "wordspark-forge-data";
 let didFetchArticles = false;
 let didFetchCategories = false;
 let didFetchAuthors = false;
-
-seedIfEmpty();
 
 interface AppState {
   likedArticles: Set<string>;
@@ -72,9 +69,9 @@ function loadInitialState(): AppState {
           likedArticles: new Set(parsed.likedArticles || []),
           bookmarkedArticles: new Set(parsed.bookmarkedArticles || []),
           followedAuthors: new Set(parsed.followedAuthors || []),
-          articles: normalizeArticles(parsed.articles?.length ? parsed.articles : getSeedArticles()),
-          authors: parsed.authors?.length ? parsed.authors : getSeedAuthors(),
-          categories: parsed.categories?.length ? parsed.categories : getSeedCategories(),
+          articles: normalizeArticles(parsed.articles?.length ? parsed.articles : []),
+          authors: parsed.authors?.length ? parsed.authors : [],
+          categories: parsed.categories?.length ? parsed.categories : [],
           currentUser: parsed.currentUser ?? null,
         };
       } catch (e) {
@@ -82,17 +79,14 @@ function loadInitialState(): AppState {
       }
     }
   }
-  const seedArticles = getSeedArticles();
-  const seedAuthors = getSeedAuthors();
-  const seedCategories = getSeedCategories();
   return {
     likedArticles: new Set(),
     bookmarkedArticles: new Set(),
     followedAuthors: new Set(),
     newsletterSubscribed: false,
-    articles: normalizeArticles(seedArticles),
-    authors: seedAuthors,
-    categories: seedCategories,
+    articles: normalizeArticles([]),
+    authors: [],
+    categories: [],
     currentUser: null,
   };
 }
