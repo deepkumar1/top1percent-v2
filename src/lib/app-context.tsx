@@ -56,6 +56,7 @@ interface AppContextValue extends AppState {
   getMyPosts: () => Article[];
   getReviewQueue: () => Article[];
   canApprovePost: (slug: string) => boolean;
+  addCategory: (category: Category) => void;
 }
 
 const AppContext = createContext<AppContextValue | undefined>(undefined);
@@ -398,6 +399,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
     [state.currentUser, state.articles],
   );
 
+  const addCategory = useCallback((category: Category) => {
+    setState((prev) => ({
+      ...prev,
+      categories: prev.categories.some((c) => c.slug === category.slug)
+        ? prev.categories
+        : [...prev.categories, category],
+    }));
+  }, []);
+
   const contextValue = useMemo(
     () => ({
       ...state,
@@ -417,9 +427,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
       getMyPosts,
       getReviewQueue,
       canApprovePost,
+      addCategory,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [state],
+    [state, addCategory],
   );
 
   return (

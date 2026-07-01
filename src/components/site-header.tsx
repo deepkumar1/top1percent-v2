@@ -4,6 +4,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useApp } from "@/lib/app-context";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { getInitials, getAvatarGradient } from "@/lib/utils";
 
 export function SiteHeader() {
   const navigate = useNavigate();
@@ -56,7 +58,11 @@ export function SiteHeader() {
                   Admin
                 </Link>
               )}
-              <span className="hidden text-xs text-muted-foreground sm:inline">{currentUser.name}</span>
+              <Avatar className="hidden h-8 w-8 sm:inline-flex">
+  <AvatarFallback className={`bg-gradient-to-br ${getAvatarGradient(currentUser.name)} text-xs font-bold text-white`}>
+    {getInitials(currentUser.name)}
+  </AvatarFallback>
+</Avatar>
               <Button
                 variant="ghost"
                 size="sm"
@@ -97,7 +103,7 @@ export function SiteHeader() {
                 onClick={() => { logout(); setOpen(false); navigate({ to: "/" }); toast.success("Signed out."); }}
                 className="rounded-md px-3 py-2 text-left hover:bg-muted"
               >
-                Sign out ({currentUser.name})
+                Sign out <strong>({currentUser.name})</strong>
               </button>
             ) : (
               <></>

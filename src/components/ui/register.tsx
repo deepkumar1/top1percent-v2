@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { authApi } from "@/lib/api/auth";
 
-export function RegisterPage() {
+export function RegisterPage({ adminCreate }: { adminCreate?: boolean }) {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
@@ -34,9 +34,9 @@ export function RegisterPage() {
     try {
       const res = await authApi.register({ username, email, password, confirmPassword, role });
 
-      if (!res.success) {
-        setError(res.message || "Registration failed.");
-        toast.error(res.message || "Registration failed.");
+      if (!res) {
+        setError("Registration failed.");
+        toast.error("Registration failed.");
         return;
       }
 
@@ -57,7 +57,7 @@ export function RegisterPage() {
         <h1 className="font-serif text-3xl font-semibold">Create account</h1>
 
         <p className="mt-2 text-sm text-muted-foreground">
-          Register to start writing and publishing.
+          {adminCreate ? "Create a new user account." : "Register to start writing and publishing."}
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 grid gap-4">
@@ -144,7 +144,7 @@ export function RegisterPage() {
                   value="AUTHOR"
                   checked={role === "AUTHOR"}
                   onChange={() => setRole("AUTHOR")}
-                  disabled={role === "AUTHOR"}
+                  disabled={!adminCreate && role === "AUTHOR"}
                   className="h-4 w-4 accent-primary"
                 />
                 <span className="text-sm text-muted-foreground">Author</span>
@@ -156,6 +156,7 @@ export function RegisterPage() {
                   value="ADMIN"
                   checked={role === "ADMIN"}
                   onChange={() => setRole("ADMIN")}
+                  disabled={!adminCreate}
                   className="h-4 w-4 accent-primary"
                 />
                 <span className="text-sm text-muted-foreground">Admin</span>
@@ -170,12 +171,14 @@ export function RegisterPage() {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          Already have an account?{" "}
-          <Link to="/login" className="font-medium text-primary hover:underline">
-            Sign in
-          </Link>
-        </p>
+        {!adminCreate && (
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            Already have an account?{" "}
+            <Link to="/login" className="font-medium text-primary hover:underline">
+              Sign in
+            </Link>
+          </p>
+        )}
 
         <p className="mt-4 text-center text-sm text-muted-foreground">
           <Link to="/" className="text-primary hover:underline">

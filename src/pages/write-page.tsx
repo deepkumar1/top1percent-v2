@@ -29,11 +29,13 @@ function WriteDashboard() {
     updateOwnPost,
     deleteOwnPost,
     getMyPosts,
+    addCategory,
   } = useApp();
 
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
   const [formData, setFormData] = useState<PostFormData>(defaultPostFormState);
   const [errors, setErrors] = useState<Partial<PostFormData>>({});
+  const [editorKey, setEditorKey] = useState(0);
 
   const authorUsername =
     currentUser?.authorUsername ?? formData.authorUsername ?? authors[0]?.username ?? "admin";
@@ -59,11 +61,13 @@ function WriteDashboard() {
       category: CATEGORIES[0]?.slug || "",
     });
     setErrors({});
+    setEditorKey((k) => k + 1);
   };
 
   const handleEdit = (article: Article) => {
     setEditingSlug(article.slug);
     setFormData(articleToFormData(article));
+    setEditorKey((k) => k + 1);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -72,6 +76,9 @@ function WriteDashboard() {
 
     const validationErrors: Partial<PostFormData> = {};
     if (!formData.title) validationErrors.title = "Title is required";
+    if (!formData.slug) validationErrors.slug = "Slug is required";
+    if (!formData.excerpt) validationErrors.excerpt = "Excerpt is required";
+    if (!formData.category) validationErrors.category = "Category is required";
     if (!formData.content) validationErrors.content = "Content is required";
 
     if (Object.keys(validationErrors).length > 0) {
@@ -113,6 +120,11 @@ function WriteDashboard() {
     );
   }
 
+  const handleCategoryCreated = (category: import("@/lib/mock-data").Category) => {
+    addCategory(category);
+    setFormData((prev) => ({ ...prev, category: category.slug }));
+  };
+
   const submitLabel = editingSlug
     ? editingWasLive
       ? "Save & submit for re-approval"
@@ -148,6 +160,8 @@ function WriteDashboard() {
             adminFeedback={editingArticle?.adminFeedback}
             editingWasLive={editingWasLive}
             errors={errors}
+            onCategoryCreated={handleCategoryCreated}
+            editorKey={String(editorKey)}
           />
         </div>
 

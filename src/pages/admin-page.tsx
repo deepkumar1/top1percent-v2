@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useApp } from "@/lib/app-context";
 import { RequireAuth } from "@/components/require-auth";
@@ -171,6 +172,16 @@ function AdminDashboard() {
         Review submissions, approve posts to go live, or send them back with feedback.
         Use <strong className="font-medium text-foreground">Write</strong> in the header to create posts — another admin must approve yours.
       </p>
+
+      <div className="mt-6 flex gap-3">
+        <Link
+          to="/register"
+          search={{ admin: true }}
+          className="inline-flex h-9 items-center gap-2 rounded-full bg-secondary px-4 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/90"
+        >
+          + Create new user
+        </Link>
+      </div>
 
       {editingSlug && (
         <div className="mt-10 rounded-2xl border border-border bg-card p-6">
