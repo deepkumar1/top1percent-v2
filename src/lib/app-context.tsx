@@ -218,7 +218,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
       setAuthToken(d.token);
       const decoded = decodeJwtUser(d.token);
-      const role = mapSpringRole(decoded.roles.length > 0 ? decoded.roles : res.roles);
+      const role = mapSpringRole(decoded.role || d.role);
       const name = decoded.username || email;
       setState((prev) => ({
         ...prev,
