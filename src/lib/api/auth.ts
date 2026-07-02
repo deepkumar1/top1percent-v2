@@ -65,10 +65,8 @@ export const authApi = {
   },
 
   login(email: string, password: string) {
-    const res = apiClient
+    return apiClient
       .post<LoginResponse>("/users/login", { email, password })
-      .then((res) => res?.data || {});
-
-    return res || {};
+      .then((res) => res?.data || {} as LoginResponse);
   },
 };
