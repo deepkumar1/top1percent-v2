@@ -209,24 +209,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     try {
       const res = await authApi.login(email, password);
-      if (res.success && res.data) {
-        const d = res.data;
-        setAuthToken(res.data.token);
-        const decoded = decodeJwtUser(res.data.token);
-        const role = mapSpringRole(decoded.role);
-        const name = decoded.username || email;
-        setState((prev) => ({
-          ...prev,
-          currentUser: {
-            id: String(decoded.id || res.id),
-            email: decoded.email || res.email,
-            name,
-            role,
-            authorUsername: decoded.username || name,
-          },
-        }));
-        return true;
+      if (!res || typeof res !== 'object' || !res.success || !res.data) {
+        return false;
       }
+      const d = res.data;
+      if (!d.token || typeof d.token !== 'string') {
+        return false;
+      }
+      setAuthToken(d.token);
+      const decoded = decodeJwtUser(d.token);
+      const role = mapSpringRole(decoded.role || d.role);
+      const name = decoded.username || email;
+      setState((prev) => ({
+        ...prev,
+        currentUser: {
+          id: String(decoded.id || d.id),
+          email: decoded.email || d.email,
+          name,
+          role,
+          authorUsername: decoded.username || name,
+        },
+      }));
+      return true;
     } catch {
       return false;
     }
