@@ -3,7 +3,8 @@ import type { Article, Author, Category } from "./mock-data";
 import { categoriesApi } from "./api/categories";
 import { authorsApi } from "./api/authors";
 import type { SessionUser } from "./auth";
-import { authApi } from "./api/auth";
+import { authApi, decodeJwtUser, mapSpringRole } from "./api/auth";
+import { setAuthToken, registerUnauthorizedHandler, unregisterUnauthorizedHandler } from "./api/client";
 import { normalizeArticles } from "./articles";
 import {
   applyApprove,
@@ -210,22 +211,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const res = await authApi.login(email, password);
       if (res.success && res.data) {
         const d = res.data;
+        setAuthToken(res.data.token);
+        const decoded = decodeJwtUser(res.data.token);
+        const role = mapSpringRole(decoded.role);
+        const name = decoded.username || email;
         setState((prev) => ({
           ...prev,
           currentUser: {
-            id: d.id,
-            email: d.email,
-            name: d.name || d.username || email,
-            role: (d.role?.toLowerCase() as "admin" | "author") || "author",
-            authorUsername: d.authorUsername || d.username,
+            id: String(decoded.id || res.id),
+            email: decoded.email || res.email,
+            name,
+            role,
+            authorUsername: decoded.username || name,
           },
         }));
         return true;
       }
     } catch {
-      // API unavailable
+      return false;
     }
-    return false;
   };
 
   const logout = () => {
