@@ -25,9 +25,27 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden items-center gap-1 text-sm text-muted-foreground md:flex">
-          <Link to="/articles" className="font-bold transition-all px-3 py-2 rounded-md hover:bg-muted hover:text-foreground" activeProps={{ className: "text-foreground" }}>Articles</Link>
-          <Link to="/categories" className="font-bold transition-all px-3 py-2 rounded-md hover:bg-muted hover:text-foreground" activeProps={{ className: "text-foreground" }}>Categories</Link>
-          <Link to="/search" className="font-bold transition-all px-3 py-2 rounded-md hover:bg-muted hover:text-foreground" activeProps={{ className: "text-foreground" }}>Search</Link>
+          <Link
+            to="/articles"
+            className="font-bold transition-all px-3 py-2 rounded-md hover:bg-muted hover:text-foreground"
+            activeProps={{ className: "text-foreground" }}
+          >
+            Articles
+          </Link>
+          <Link
+            to="/categories"
+            className="font-bold transition-all px-3 py-2 rounded-md hover:bg-muted hover:text-foreground"
+            activeProps={{ className: "text-foreground" }}
+          >
+            Categories
+          </Link>
+          <Link
+            to="/search"
+            className="font-bold transition-all px-3 py-2 rounded-md hover:bg-muted hover:text-foreground"
+            activeProps={{ className: "text-foreground" }}
+          >
+            Search
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -38,14 +56,14 @@ export function SiteHeader() {
           >
             <Search className="h-4 w-4" />
           </Link>
-            <Link
-                to={currentUser ? "/write" : "/login"}
-                search={currentUser ? undefined : { redirect: "/write" }}
-                className="hidden h-9 items-center gap-2 rounded-full bg-secondary px-4 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/90 sm:inline-flex"
-              >
-                <PenLine className="h-4 w-4" />
-                Write
-              </Link>
+          <Link
+            to={currentUser ? "/write" : "/login"}
+            search={currentUser ? undefined : { redirect: "/write" }}
+            className="hidden h-9 items-center gap-2 rounded-full bg-secondary px-4 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/90 sm:inline-flex"
+          >
+            <PenLine className="h-4 w-4" />
+            Write
+          </Link>
 
           {currentUser ? (
             <>
@@ -59,14 +77,20 @@ export function SiteHeader() {
                 </Link>
               )}
               <Avatar className="hidden h-8 w-8 sm:inline-flex">
-  <AvatarFallback className={`bg-gradient-to-br ${getAvatarGradient(currentUser.name)} text-xs font-bold text-white`}>
-    {getInitials(currentUser.name)}
-  </AvatarFallback>
-</Avatar>
+                <AvatarFallback
+                  className={`bg-gradient-to-br ${getAvatarGradient(currentUser.name)} text-xs font-bold text-white`}
+                >
+                  {getInitials(currentUser.name)}
+                </AvatarFallback>
+              </Avatar>
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => { logout(); navigate({ to: "/" }); toast.success("Signed out."); }}
+                onClick={() => {
+                  logout();
+                  navigate({ to: "/" });
+                  toast.success("Signed out.");
+                }}
                 className="hidden h-9 gap-1.5 sm:inline-flex"
               >
                 <LogOut className="h-4 w-4" />
@@ -74,8 +98,7 @@ export function SiteHeader() {
               </Button>
             </>
           ) : (
-            <>
-            </>
+            <></>
           )}
 
           <button
@@ -91,16 +114,45 @@ export function SiteHeader() {
       {open && (
         <div className="border-t border-border bg-background md:hidden">
           <nav className="container-wide flex flex-col gap-1 py-3 text-sm">
-            <Link onClick={() => setOpen(false)} to="/articles" className="rounded-md px-3 py-2 hover:bg-muted">Articles</Link>
-            <Link onClick={() => setOpen(false)} to="/categories" className="rounded-md px-3 py-2 hover:bg-muted">Categories</Link>
-            <Link onClick={() => setOpen(false)} to="/search" className="rounded-md px-3 py-2 hover:bg-muted">Search</Link>
+            <Link
+              onClick={() => setOpen(false)}
+              to="/articles"
+              className="rounded-md px-3 py-2 hover:bg-muted"
+            >
+              Articles
+            </Link>
+            <Link
+              onClick={() => setOpen(false)}
+              to="/categories"
+              className="rounded-md px-3 py-2 hover:bg-muted"
+            >
+              Categories
+            </Link>
+            <Link
+              onClick={() => setOpen(false)}
+              to="/search"
+              className="rounded-md px-3 py-2 hover:bg-muted"
+            >
+              Search
+            </Link>
             {currentUser?.role === "admin" && (
-              <Link onClick={() => setOpen(false)} to="/admin" className="rounded-md px-3 py-2 hover:bg-muted">Admin</Link>
+              <Link
+                onClick={() => setOpen(false)}
+                to="/admin"
+                className="rounded-md px-3 py-2 hover:bg-muted"
+              >
+                Admin
+              </Link>
             )}
             {currentUser ? (
               <button
                 type="button"
-                onClick={() => { logout(); setOpen(false); navigate({ to: "/" }); toast.success("Signed out."); }}
+                onClick={() => {
+                  logout();
+                  setOpen(false);
+                  navigate({ to: "/" });
+                  toast.success("Signed out.");
+                }}
                 className="rounded-md px-3 py-2 text-left hover:bg-muted"
               >
                 Sign out <strong>({currentUser.name})</strong>

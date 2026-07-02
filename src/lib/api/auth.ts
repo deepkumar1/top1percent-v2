@@ -27,14 +27,16 @@ export type LoginResponse = {
   id: number;
   username: string;
   email: string;
-  roles: string[];
+  role: string;
+  success: boolean;
+  data: LoginResponse;
 };
 
 export function decodeJwtUser(token: string): {
   id: number;
   username: string;
   email: string;
-  roles: string[];
+  role: string;
 } {
   try {
     const payload = JSON.parse(atob(token.split(".")[1]));
@@ -42,16 +44,16 @@ export function decodeJwtUser(token: string): {
       id: payload.id ?? payload.userId ?? 0,
       username: payload.sub ?? payload.username ?? "",
       email: payload.email ?? "",
-      roles: payload.role ?? [],
+      role: payload.role ?? "",
     };
   } catch {
-    return { id: 0, username: "", email: "", roles: [] };
+    return { id: 0, username: "", email: "", role: "" };
   }
 }
 
 export function mapSpringRole(role: string | string[]): "admin" | "author" {
   const roles = Array.isArray(role) ? role : [role];
-  if (roles.some((r) => r.includes("ROLE_ADMIN"))) return "admin";
+  if (roles.some((r) => r.includes("ADMIN"))) return "admin";
   return "author";
 }
 
